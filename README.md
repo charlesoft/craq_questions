@@ -1,6 +1,7 @@
 # CraqQuestions
 
-**TODO: Add description**
+Application to collect user's answers for a change request acceptence questions and validate
+those answers.
 
 ## Installation
 
