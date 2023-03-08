@@ -49,28 +49,28 @@ defmodule CraqQuestions.SurveyTest do
     test "returns an error when answer does not exist" do
       answers = %{q0: 4, q1: 2, q2: 2, q3: 1, q4: 1}
 
-      assert [{:q0, "has an answer that is not on the list of valid answers"}] =
+      assert %{q0: "has an answer that is not on the list of valid answers"} =
                Survey.validate_answers(@questions, answers)
     end
 
     test "returns an error when the previous response indicate the questions are complete" do
       answers = %{q0: 1, q1: 2, q2: 2, q3: 0, q4: 0}
 
-      assert [
-               {:q4,
-                "was answered even though a previous response indicated that the questions were complete"}
-             ] = Survey.validate_answers(@questions, answers)
+      assert %{
+               q4:
+                 "was answered even though a previous response indicated that the questions were complete"
+             } = Survey.validate_answers(@questions, answers)
     end
 
     test "returns a list of errors when questions are not answerd correctly" do
       answers = %{q0: 4, q2: 2, q3: 0, q4: 0}
 
-      assert [
-               {:q0, "has an answer that is not on the list of valid answers"},
-               {:q1, "was not answered"},
-               {:q4,
-                "was answered even though a previous response indicated that the questions were complete"}
-             ] = Survey.validate_answers(@questions, answers)
+      assert %{
+               q0: "has an answer that is not on the list of valid answers",
+               q1: "was not answered",
+               q4:
+                 "was answered even though a previous response indicated that the questions were complete"
+             } = Survey.validate_answers(@questions, answers)
     end
   end
 end

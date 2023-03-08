@@ -29,7 +29,7 @@ defmodule CraqQuestions.Survey do
       end)
 
     if length(result.errors) > 0 do
-      result.errors
+      Enum.into(result.errors, %{})
     else
       :ok
     end
@@ -54,7 +54,7 @@ defmodule CraqQuestions.Survey do
     previous_answer_value = Map.get(answers, previous_answer_key)
 
     # Here, it will find and iterate through the options of the previous questions to find if there
-    # are any option with completed_if_selected as true already answered.
+    # is any option with completed_if_selected as true already answered.
     with {%Question{options: options}, _index} <-
            Enum.find(questions, fn {_question, index} -> index == question_number - 1 end),
          options_with_index <- Enum.with_index(options),
