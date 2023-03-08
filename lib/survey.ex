@@ -13,6 +13,8 @@ defmodule CraqQuestions.Survey do
     questions = Enum.with_index(questions)
     errors = %{errors: []}
 
+    # First the iteration below will iterate through the questions and find the given answer for it.
+    # If the question were answered, it will run some validations.
     result =
       Enum.reduce(questions, errors, fn {question, question_number}, acc ->
         answer_key = build_answer_key(question_number)
@@ -51,6 +53,8 @@ defmodule CraqQuestions.Survey do
     previous_answer_key = build_answer_key(question_number - 1)
     previous_answer_value = Map.get(answers, previous_answer_key)
 
+    # Here, it will find and iterate through the options of the previous questions to find if there
+    # are any option with completed_if_selected as true already answered.
     with {%Question{options: options}, _index} <-
            Enum.find(questions, fn {_question, index} -> index == question_number - 1 end),
          options_with_index <- Enum.with_index(options),
