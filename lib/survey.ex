@@ -15,7 +15,7 @@ defmodule CraqQuestions.Survey do
 
     result =
       Enum.reduce(questions, errors, fn {question, question_number}, acc ->
-        answer_key = ("q" <> "#{question_number}") |> String.to_atom()
+        answer_key = build_answer_key(question_number)
 
         if answer_value = Map.get(answers, answer_key) do
           acc
@@ -48,17 +48,13 @@ defmodule CraqQuestions.Survey do
   end
 
   defp valid_answer_if_terminal(acc, questions, answers, question_number, answer_key) do
-    previous_answer_key = ("q" <> "#{question_number - 1}") |> String.to_atom()
+    previous_answer_key = build_answer_key(question_number - 1)
     previous_answer_value = Map.get(answers, previous_answer_key)
 
     with {%Question{options: options}, _index} <-
            Enum.find(questions, fn {_question, index} -> index == question_number - 1 end),
          options_with_index <- Enum.with_index(options),
-         true <-
-           Enum.any?(options_with_index, fn {option, index} ->
-             Map.has_key?(option, :completed_if_selected) and option.completed_if_selected and
-               index == previous_answer_value
-           end) do
+         true <- Enum.any?(options_with_index, &has_terminal_answer?(&1, previous_answer_value)) do
       Map.put(
         acc,
         :errors,
@@ -73,4 +69,14 @@ defmodule CraqQuestions.Survey do
         acc
     end
   end
+
+  defp build_answer_key(question_number) do
+    ("q" <> "#{question_number}") |> String.to_atom()
+  end
+
+  defp has_terminal_answer?({%{completed_if_selected: true}, index}, previous_answer_value) do
+    index == previous_answer_value
+  end
+
+  defp has_terminal_answer?(_option, _previous_answer_value), do: false
 end
