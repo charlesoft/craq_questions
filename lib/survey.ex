@@ -1,16 +1,14 @@
-defmodule CraqQuestion.Survey do
+defmodule CraqQuestions.Survey do
   @moduledoc """
   Module for handling the answers for the questions
   """
 
-  defmodule Question do
-    defstruct [:text, :options]
-  end
+  alias CraqQuestions.Question
 
   @questions [
     {
       %Question{
-        text: "What is the best way toplay guitar?",
+        text: "What is the best way to play guitar?",
         options: [%{text: "by myself"}, %{text: "with lesson paid"}]
       },
       %Question{
@@ -33,17 +31,17 @@ defmodule CraqQuestion.Survey do
     }
   ]
 
-  defp validate_answers(answers) do
+  def validate_answers(answers) do
     questions = Enum.with_index(@questions)
-    errors = %{errors: errors}
+    errors = %{errors: []}
 
     result =
       Enum.reduce(questions, errors, fn {question, question_number}, acc ->
-        answer_key = ("q" <> index) |> String.to_atom()
+        answer_key = ("q" <> "#{question_number}") |> String.to_atom()
 
-        if answer_value = Map.get_value(answers, answer_key) do
+        if answer_value = Map.get(answers, answer_key) do
           acc
-          |> validate_answer(question, question_number, answer_value, answer_key)
+          |> validate_answer(question, answer_value, answer_key)
           |> valid_answer_if_terminal(questions, question_number, answer_key)
         else
           acc[:errors] ++ [[answer_key, "was not answered"]]
@@ -57,7 +55,7 @@ defmodule CraqQuestion.Survey do
     end
   end
 
-  defp validate_answer(acc, %Question{options: options}, question_number, answer_value, answer_key) do
+  defp validate_answer(acc, %Question{options: options}, answer_value, answer_key) do
     options_with_index = Enum.with_index(options)
 
     if Enum.any?(options_with_index, fn {_option, index} -> index == answer_value end) do
