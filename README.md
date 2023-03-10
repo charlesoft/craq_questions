@@ -72,5 +72,5 @@ answers = %{q0: 1, q1: 2, q2: 2, q3: 1, q4: 1}
 Use the Survey module to validate the answers:
 
 ```elixir
-CraqQuestions.Survey(questions, answers)
+CraqQuestions.Survey.validate_answers(questions, answers)
 ```
